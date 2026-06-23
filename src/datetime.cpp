@@ -21,6 +21,11 @@ namespace uICAL {
         this->construct(ds, tz);
     }
 
+    DateTime::DateTime(const DateStamp& ds, const TZ_ptr& tz, const bool isDate) {
+        this->isDate = isDate;
+        this->construct(ds, tz);
+    }
+    
     DateTime::DateTime(const string& datetime) {
         this->construct(datetime, new_ptr<TZMap>());
     }
@@ -45,11 +50,18 @@ namespace uICAL {
         this->tz = tz;
     }
 
+    DateTime::DateTime(seconds_t epochSeconds, const TZ_ptr& tz, const bool isDate) {
+        this->epochtime = EpochTime(epochSeconds);
+        this->isDate = isDate;
+        this->tz = tz;
+    }
+
     void DateTime::construct(const string& datetime, const TZMap_ptr& tzmap) {
         // Handle date-only format (YYYYMMDD) for all-day events per RFC 5545
         // Date-only values are "floating" - they represent the same calendar date
         // regardless of timezone, so we use unaware timezone to avoid date shifts.
         if (datetime.length() == 8) {
+            this->isDate = true;
             DateStamp ds(datetime + "T000000");
             this->tz = TZ::unaware();
             this->construct(ds, tz);
@@ -103,11 +115,15 @@ namespace uICAL {
 
     DateTime& DateTime::operator = (const DateTime& other) {
         this->tz = other.tz;
+        this->isDate = other.isDate;
         this->epochtime = other.epochtime;
         return *this;
     }
 
     void DateTime::assert_awareness(const DateTime& other, const string& msg) const {
+        if (this->isDate || other.isDate) {
+            return;
+        }
         if (this->tz->is_aware() != other.tz->is_aware()) {
             throw TZAwarenessConflictError(this->as_str() + " <> " + other.as_str() + " '" + msg + "'");
         }
@@ -124,11 +140,11 @@ namespace uICAL {
     }
 
     DateTime DateTime::operator + (const DatePeriod& dp) const {
-        return DateTime(this->epochtime.epochSeconds + dp.totalSeconds(), this->tz);
+        return DateTime(this->epochtime.epochSeconds + dp.totalSeconds(), this->tz, this->isDate);
     }
 
     DateTime DateTime::operator - (const DatePeriod& dp) const {
-        return DateTime(this->epochtime.epochSeconds - dp.totalSeconds(), this->tz);
+        return DateTime(this->epochtime.epochSeconds - dp.totalSeconds(), this->tz, this->isDate);
     }
 
     bool DateTime::operator > (const DateTime& other) const {
@@ -153,7 +169,6 @@ namespace uICAL {
 
     void DateTime::str(ostream& out) const {
         auto ymdhms = this->epochtime.ymdhms(this->tz);
-
         out << string::fmt(fmt_04d, std::get<0>(ymdhms));
         out << string::fmt(fmt_02d, std::get<1>(ymdhms));
         out << string::fmt(fmt_02d, std::get<2>(ymdhms));
@@ -188,11 +203,11 @@ namespace uICAL {
     }
 
     void DateTime::ensureAware(const DateTime& dt) {
-        if (!dt.tz->is_aware() && this->tz->is_aware()) {
+        if ((!dt.isDate && !dt.tz->is_aware()) && this->tz->is_aware()) {
             throw TZAwarenessConflictError("DateTime TZ unaware/aware usage");
         }
 
-        if (dt.tz->is_aware() && !this->tz->is_aware()) {
+        if ((dt.isDate || dt.tz->is_aware()) && !this->tz->is_aware()) {
             // Reinterpret current wall-clock in the other's timezone to keep the same local time
             DateStamp ds = this->datestamp();
             this->epochtime = EpochTime(

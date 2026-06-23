@@ -118,6 +118,12 @@ TEST_CASE("Calendar::basic", "[uICAL][Calendar]") {
     };
 
     REQUIRE(next() ==
+        "Calendar EVENT: Irrigation Day\n"
+        " - start: 20191017T000000\n"
+        " - span: P1DT\n"
+    );
+
+    REQUIRE(next() ==
         "Calendar EVENT: Irrigation Front\n"
         " - start: 20191017T100000EST\n"
         " - span: PT20M\n"

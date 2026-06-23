@@ -19,8 +19,10 @@ namespace uICAL {
             DateTime(const string& datetime, const TZMap_ptr& tzmap);
             DateTime(const string& datetime, const string& tzid, const TZMap_ptr& tzmap);
             DateTime(const DateStamp& datestamp, const TZ_ptr& tz);
+            DateTime(const DateStamp& datestamp, const TZ_ptr& tz, const bool isDate);
             DateTime(seconds_t epochSeconds);
             DateTime(seconds_t epochSeconds, const TZ_ptr& tz);
+            DateTime(seconds_t epochSeconds, const TZ_ptr& tz, const bool isDate);
             DateTime(const DateTime&) = default;
 
             void str(ostream& out) const;
@@ -52,12 +54,14 @@ namespace uICAL {
             bool operator == (const DateTime& dt) const;
 
             TZ_ptr tz;
+            bool isDate = false;
 
         protected:
             void construct(const string& datetime, const TZMap_ptr& tzmap);
             void construct(const DateStamp& ds, const TZ_ptr& tz);
             void assert_awareness(const DateTime& other, const string& msg) const;
 
+            // bool isDate;
             EpochTime epochtime;
     };
 
