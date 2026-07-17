@@ -19,7 +19,8 @@ namespace uICAL {
         for (auto standard : standards) {
 
             string offset = standard->getPropertyByName("TZOFFSETFROM")->value;
-            string name = standard->getPropertyByName("TZNAME")->value;
+            auto optional = standard->getPropertyByName("TZNAME");
+            string name = optional ? optional->value : offset;
 
             this->add(tzId, name, offset);
         }

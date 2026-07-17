@@ -35,6 +35,9 @@ TEST_CASE("TZ::test1", "[uICAL][TZ]") {
         tzList.push_back(uICAL::new_ptr<uICAL::TZ>("PST", tzmap));
         tzList.push_back(uICAL::new_ptr<uICAL::TZ>("America/Los_Angeles", tzmap));
 
+        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("+0000", tzmap)); // TZNAME is optional, so offset is used
+        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("UTC", tzmap));
+
         auto tz = uICAL::new_ptr<uICAL::TZ>("Z");
         auto dt = uICAL::DateTime(ds, tz);
 
@@ -60,6 +63,8 @@ TEST_CASE("TZ::test1", "[uICAL][TZ]") {
         REQUIRE(next() == "20191105T105555 MST");
         REQUIRE(next() == "20191105T095555 PST");
         REQUIRE(next() == "20191105T095555 PST");
+        REQUIRE(next() == "20191105T175555 +0000");
+        REQUIRE(next() == "20191105T175555 +0000");
         REQUIRE(next() == "END");
     }
 }
