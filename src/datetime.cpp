@@ -15,45 +15,55 @@
 namespace uICAL {
     DateTime::DateTime() {
         this->tz = TZ::undef();
+        this->dateOnly = false;
     }
 
     DateTime::DateTime(const DateStamp& ds, const TZ_ptr& tz) {
         this->construct(ds, tz);
+        this->dateOnly = false;
     }
 
     DateTime::DateTime(const DateStamp& ds, const TZ_ptr& tz, const bool isDate) {
-        this->dateOnly = isDate;
         this->construct(ds, tz);
+        this->dateOnly = isDate;
     }
     
     DateTime::DateTime(const string& datetime) {
+        // default unless a date-only string format is detected in construct()
+        this->dateOnly = false;
         this->construct(datetime, new_ptr<TZMap>());
     }
 
     DateTime::DateTime(const string& datetime, const TZMap_ptr& tzmap) {
+        // default unless a date-only string format is detected in construct()
+        this->dateOnly = false;
         this->construct(datetime, tzmap);
     }
 
     DateTime::DateTime(const string& datetime, const string& tzid, const TZMap_ptr& tzmap) {
         DateStamp ds = DateStamp(datetime);
         TZ_ptr tz = new_ptr<TZ>(tzid, tzmap);
+        // default unless a date-only string format is detected in construct()
+        this->dateOnly = false;
         this->construct(ds, tz);
     }
 
     DateTime::DateTime(seconds_t epochSeconds) {
         this->epochtime = EpochTime(epochSeconds);
         this->tz = new_ptr<TZ>("Z");
+        this->dateOnly = false;
     }
 
     DateTime::DateTime(seconds_t epochSeconds, const TZ_ptr& tz) {
         this->epochtime = EpochTime(epochSeconds);
         this->tz = tz;
+        this->dateOnly = false;
     }
 
     DateTime::DateTime(seconds_t epochSeconds, const TZ_ptr& tz, const bool isDate) {
         this->epochtime = EpochTime(epochSeconds);
-        this->dateOnly = isDate;
         this->tz = tz;
+        this->dateOnly = isDate;
     }
 
     void DateTime::construct(const string& datetime, const TZMap_ptr& tzmap) {

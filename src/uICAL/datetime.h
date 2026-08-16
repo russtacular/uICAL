@@ -61,7 +61,7 @@ namespace uICAL {
             void construct(const DateStamp& ds, const TZ_ptr& tz);
             void assert_awareness(const DateTime& other, const string& msg) const;
 
-            bool dateOnly = false;
+            bool dateOnly;
             EpochTime epochtime;
     };
 
