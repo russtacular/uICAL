@@ -29,21 +29,16 @@ namespace uICAL {
     }
     
     DateTime::DateTime(const string& datetime) {
-        // default unless a date-only string format is detected in construct()
-        this->dateOnly = false;
         this->construct(datetime, new_ptr<TZMap>());
     }
 
     DateTime::DateTime(const string& datetime, const TZMap_ptr& tzmap) {
-        // default unless a date-only string format is detected in construct()
-        this->dateOnly = false;
         this->construct(datetime, tzmap);
     }
 
     DateTime::DateTime(const string& datetime, const string& tzid, const TZMap_ptr& tzmap) {
         DateStamp ds = DateStamp(datetime);
         TZ_ptr tz = new_ptr<TZ>(tzid, tzmap);
-        // default unless a date-only string format is detected in construct()
         this->dateOnly = false;
         this->construct(ds, tz);
     }
@@ -90,6 +85,7 @@ namespace uICAL {
             this->tz = TZ::unaware();
         }
 
+        this->dateOnly = false;
         this->construct(ds, tz);
     }
 
