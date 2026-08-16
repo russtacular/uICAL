@@ -28,6 +28,7 @@ namespace uICAL {
             void str(ostream& out) const;
 
             bool valid() const;
+            bool isDate() const;
 
             DateStamp datestamp() const;
             DateStamp datestamp(const TZ_ptr& tz) const;
@@ -54,14 +55,13 @@ namespace uICAL {
             bool operator == (const DateTime& dt) const;
 
             TZ_ptr tz;
-            bool isDate = false;
 
         protected:
             void construct(const string& datetime, const TZMap_ptr& tzmap);
             void construct(const DateStamp& ds, const TZ_ptr& tz);
             void assert_awareness(const DateTime& other, const string& msg) const;
 
-            // bool isDate;
+            bool dateOnly = false;
             EpochTime epochtime;
     };
 

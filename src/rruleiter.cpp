@@ -161,7 +161,7 @@ namespace uICAL {
 
     void RRuleIter::setCurrentNow() {
         DateStamp now = this->cascade->value();
-        this->current_now = DateTime(now, this->rr->dtstart.tz, this->rr->dtstart.isDate);
+        this->current_now = DateTime(now, this->rr->dtstart.tz, this->rr->dtstart.isDate());
     }
 
     /*
