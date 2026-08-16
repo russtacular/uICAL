@@ -179,7 +179,7 @@ namespace uICAL {
 
     void DateTime::str(ostream& out) const {
         auto ymdhms = this->epochtime.ymdhms(this->tz);
-        
+
         out << string::fmt(fmt_04d, std::get<0>(ymdhms));
         out << string::fmt(fmt_02d, std::get<1>(ymdhms));
         out << string::fmt(fmt_02d, std::get<2>(ymdhms));
