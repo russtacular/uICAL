@@ -118,12 +118,6 @@ TEST_CASE("Calendar::basic", "[uICAL][Calendar]") {
     };
 
     REQUIRE(next() ==
-        "Calendar EVENT: Irrigation Day\n"
-        " - start: 20191017T000000\n"
-        " - span: P1DT\n"
-    );
-
-    REQUIRE(next() ==
         "Calendar EVENT: Irrigation Front\n"
         " - start: 20191017T100000EST\n"
         " - span: PT20M\n"
@@ -144,6 +138,50 @@ TEST_CASE("Calendar::basic", "[uICAL][Calendar]") {
     REQUIRE(next() == "END");
 }
 
+
+TEST_CASE("Calendar::all_day_event", "[uICAL][Calendar]") {
+    std::ifstream input(std::string("test/data/ical_events.txt"));
+    uICAL::istream_stl ical(input);
+
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
+    auto cal = uICAL::Calendar::load(ical, tzmap);
+    REQUIRE(cal->as_str() == "CALENDAR\n");
+
+    auto calIt = uICAL::new_ptr<uICAL::CalendarIter>(cal,
+        uICAL::DateTime("20191216T102000Z"),
+        uICAL::DateTime("20191217T103000EST", tzmap));
+
+    auto next = [=](){
+        if(calIt->next()) {
+            return calIt->current()->as_str();
+        }
+        else {
+            return uICAL::string("END");
+        }
+    };
+
+    // All day events should be included if any of the event's 
+    // time range overlaps the query range
+    REQUIRE(next() ==
+        "Calendar EVENT: Irrigation Day\n"
+        " - start: 20191217T000000\n"
+        " - span: P1DT\n"
+    );
+
+    REQUIRE(next() ==
+        "Calendar EVENT: Irrigation Front\n"
+        " - start: 20191217T100000EST\n"
+        " - span: PT20M\n"
+    );
+
+    REQUIRE(next() ==
+        "Calendar EVENT: Irrigation Beds\n"
+        " - start: 20191217T103000EST\n"
+        " - span: PT10M\n"
+    );
+
+    REQUIRE(next() == "END");
+}
 
 TEST_CASE("Calendar::finite", "[uICAL][Calendar]") {
     std::ifstream input(std::string("test/data/ical_events.txt"));
