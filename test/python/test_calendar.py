@@ -33,6 +33,35 @@ def test_basic_ical1():
     ]
     assert res == exp
 
+def test_all_day_event():
+    ical = open("test/data/ical_events.txt").read()
+    cal = uICAL.Calendar(ical, begin="20191216T102000Z", end="20191217T103000-0500")
+
+    res = []
+    while cal.next():
+        res.append(cal.current())
+
+    exp = [
+        {
+            'type': 'EVENT',
+            'summary': 'Irrigation Day',
+            'start': (2019, 12, 17, 0, 0, 0, 0),
+            'duration': 86400,
+        },
+        {
+            'type': 'EVENT',
+            'summary': 'Irrigation Front',
+            'start': (2019, 12, 17, 10, 0, 0, -300),
+            'duration': 1200,
+        },
+        {
+            'type': 'EVENT',
+            'summary': 'Irrigation Beds',
+            'start': (2019, 12, 17, 10, 30, 0, -300),
+            'duration': 600,
+        },
+    ]
+    assert res == exp
 
 def test_basic_range():
     ical = open("test/data/ical_events.txt").read()
