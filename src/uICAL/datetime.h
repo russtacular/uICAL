@@ -19,13 +19,16 @@ namespace uICAL {
             DateTime(const string& datetime, const TZMap_ptr& tzmap);
             DateTime(const string& datetime, const string& tzid, const TZMap_ptr& tzmap);
             DateTime(const DateStamp& datestamp, const TZ_ptr& tz);
+            DateTime(const DateStamp& datestamp, const TZ_ptr& tz, const bool dateOnly);
             DateTime(seconds_t epochSeconds);
             DateTime(seconds_t epochSeconds, const TZ_ptr& tz);
+            DateTime(seconds_t epochSeconds, const TZ_ptr& tz, const bool dateOnly);
             DateTime(const DateTime&) = default;
 
             void str(ostream& out) const;
 
             bool valid() const;
+            bool isDateOnly() const;
 
             DateStamp datestamp() const;
             DateStamp datestamp(const TZ_ptr& tz) const;
@@ -58,6 +61,7 @@ namespace uICAL {
             void construct(const DateStamp& ds, const TZ_ptr& tz);
             void assert_awareness(const DateTime& other, const string& msg) const;
 
+            bool dateOnly;
             EpochTime epochtime;
     };
 
